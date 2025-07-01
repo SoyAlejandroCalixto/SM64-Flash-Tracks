@@ -1,0 +1,3 @@
+-- name: \\#fb2c36\\SM64: \\#ad46ff\\Flash Tracks
+-- description: Game mode inspired by GTA V Online's racing and Fall Guys' platforming levels. The goal is to reach the finish line as quickly as possible by dodging obstacles at top speed and kicking others to prevent them from reaching it before you.
+-- incompatible: romhack
