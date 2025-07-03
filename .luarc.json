@@ -2,5 +2,6 @@
   "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
   "runtime.version": "Lua 5.4",
   "format.enable": true,
+  "diagnostics.disable": ["lowercase-global"],
   "workspace.library": ["/YOUR/SM64COOPDX/REPO/PATH/autogen/lua_definitions"]
 }
