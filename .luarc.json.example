@@ -3,5 +3,5 @@
   "runtime.version": "Lua 5.4",
   "format.enable": true,
   "diagnostics.disable": ["lowercase-global"],
-  "workspace.library": ["/home/kappy/code/sm64coopdx/repo/autogen/lua_definitions"]
+  "workspace.library": ["/YOUR/SM64COOPDX/REPO/PATH/autogen/lua_definitions"]
 }
