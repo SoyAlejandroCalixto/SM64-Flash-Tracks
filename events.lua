@@ -1,4 +1,6 @@
 function on_game_start()
+    gGlobalSyncTable.game_should_end = false -- Temporal workaround for softlock warp loop issue
+
     if #get_enabled_levels() == 0 then return end -- If no levels are enabled, do nothing.
     if network_is_server() then
         rand = math.random(1, #get_enabled_levels())
@@ -78,6 +80,7 @@ function on_game_end()
     end
 end
 
+---@param m MarioState
 function on_start_countdown(m)
     audio_sample_play(AUDIO_COUNTDOWN_MORE_THAN_0, m.pos, 5)
     level_timer_freezed = true
