@@ -1,5 +1,7 @@
 function on_game_start()
-    gGlobalSyncTable.game_should_end = false -- Temporal workaround for softlock warp loop issue
+    if network_is_server() then
+        gGlobalSyncTable.game_should_end = false -- If the host presses Y before everyone reaches the lobby at the end of the game, 'game_should_end' is not set to false, causing a softlock in which the game warps you to the lobby and 'chosen_level' in a loop. With this you avoid it.
+    end
 
     if #get_enabled_levels() == 0 then return end -- If no levels are enabled, do nothing.
     if network_is_server() then
@@ -118,7 +120,9 @@ end
 local function on_death(m)
     each_frame(10, function() m.health = 2176 end)
     m.pos.x, m.pos.y, m.pos.z = last_checkpoint.x, last_checkpoint.y, last_checkpoint.z
-    if m.action & ACT_FLAG_RIDING_SHELL == 0 then
+    m.vel.x, m.vel.y, m.vel.z = 0, 0, 0
+    m.forwardVel = 0
+    if m.action & ACT_FLAG_RIDING_SHELL == 0 then -- If mario is riding a shell, it becomes buggy.
         m.action = ACT_IDLE
     end
     reset_camera(m.area.camera)
