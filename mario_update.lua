@@ -7,6 +7,7 @@ function mario_update(m)
     -- Bools abstraction for better readability
     local mario_landed = (m.prevAction & ACT_FLAG_AIR) ~= 0 and (m.action & ACT_FLAG_AIR) == 0
     local mario_above_checkpoint = m.floor.type == 48
+    local mario_above_bounce = m.floor.type == 53
     local you_got_a_star = m.action == ACT_STAR_DANCE_EXIT or m.action == ACT_STAR_DANCE_NO_EXIT or m.action == ACT_STAR_DANCE_WATER
     local there_is_already_a_winner = gGlobalSyncTable.winner_index ~= nil
     local host_pressed_y_in_lobby = network_is_server() and m.controller.buttonPressed & Y_BUTTON ~= 0 and not gGlobalSyncTable.game_should_start and not gGlobalSyncTable.in_game and gNetworkPlayers[0].currLevelNum == LEVEL_LOBBY
@@ -28,6 +29,14 @@ function mario_update(m)
 
     if mario_landed and mario_above_checkpoint then
         set_checkpoint(m.pos)
+    end
+
+    if mario_landed and mario_above_bounce then
+        bounce(m)
+    end
+
+    if mario_above_bounce and m.pos.y + m.vel.y <= m.floorHeight then -- If just before touching the ground above a bounce
+        m.peakHeight = m.pos.y -- Ignore fall damage
     end
 
     if you_got_a_star then

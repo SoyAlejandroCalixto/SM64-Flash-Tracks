@@ -116,13 +116,30 @@ function on_start_countdown(m)
     after_frames(30, countdown_timer) -- Start countdown after 1 second.
 end
 
+---@param m MarioState
+function bounce(m)
+    if m.health > 0 then
+        if m.action == ACT_GROUND_POUND_LAND then
+            set_mario_action(m, ACT_TRIPLE_JUMP, 0)
+            m.vel.y = 88
+        else
+            set_mario_action(m, ACT_DOUBLE_JUMP, 0)
+            m.flags = m.flags | MARIO_MARIO_SOUND_PLAYED -- It is annoying to hear Mario's “HOOHOO” all the time.
+            m.vel.y = 80
+        end
+        play_sound(SOUND_ACTION_BOUNCE_OFF_OBJECT, m.marioObj.header.gfx.cameraToObject)
+    end
+end
+
 --- @param m MarioState
 local function on_death(m)
-    each_frame(10, function() m.health = 2176 end)
+    each_frame(10, function() m.health = 2176 end) -- 10 invulnerability frames.
+    m.hurtCounter = 0 -- If right now you have periodic damage (e.g., lava, which damages you gradually) it is removed.
+
     m.pos.x, m.pos.y, m.pos.z = last_checkpoint.x, last_checkpoint.y, last_checkpoint.z
     m.vel.x, m.vel.y, m.vel.z = 0, 0, 0
     m.forwardVel = 0
-    if m.action & ACT_FLAG_RIDING_SHELL == 0 then -- If mario is riding a shell, it becomes buggy.
+    if m.action & ACT_FLAG_RIDING_SHELL == 0 then -- If mario is riding a shell and you switch to idle, it becomes buggy.
         m.action = ACT_IDLE
     end
     reset_camera(m.area.camera)
@@ -134,11 +151,16 @@ hook_event(HOOK_ON_DEATH, function(m)
 end)
 
 local function on_level_init()
-    if gNetworkPlayers[0].currLevelNum ~= LEVEL_LOBBY then
-        level_timer = 0
+    if gNetworkPlayers[0].currLevelNum ~= LEVEL_WINNER_PRESENTATION then -- If the level is the winner presentation, keep the previous level counter.
+        level_timer = 0 -- If not, reset the level timer for the new level.
     end
-    set_ttc_speed_setting(TTC_SPEED_FAST)
-    each_frame(10, function() gMarioStates[0].health = 2176 end)
+    each_frame(10, function() gMarioStates[0].health = 2176 end) -- 10 invulnerability frames.
+
+    if gNetworkPlayers[0].currLevelNum == LEVEL_TURTLES_PACE then
+        set_ttc_speed_setting(TTC_SPEED_FAST)
+    else
+        set_ttc_speed_setting(TTC_SPEED_SLOW)
+    end
 
     save_file_set_flags(SAVE_FLAG_HAVE_METAL_CAP)
     save_file_set_flags(SAVE_FLAG_HAVE_VANISH_CAP)
